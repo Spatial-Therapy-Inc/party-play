@@ -8,3 +8,6 @@ shots/
 heap.json
 ai-selfreview.json
 *.tikpal
+test/out/
+test/bin/
+build-profile/

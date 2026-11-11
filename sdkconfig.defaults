@@ -8,10 +8,11 @@ CONFIG_SPIRAM_MODE_OCT=y
 CONFIG_SPIRAM_SPEED_80M=y
 CONFIG_SPIRAM_USE_MALLOC=y
 CONFIG_SPIRAM_MALLOC_ALWAYSINTERNAL=16384
+# Boot time: the 8 MB PSRAM test costs ~420 ms on every start (each app switch is a restart).
+CONFIG_SPIRAM_MEMTEST=n
 CONFIG_PARTITION_TABLE_CUSTOM=y
-# Extension firmware run in a slot of the yaykit-v1 layout, with app rollback.
-CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="../partitions/yaykit-v1.csv"
-CONFIG_PARTITION_TABLE_FILENAME="../partitions/yaykit-v1.csv"
+# A slot of the yaykit-v1 layout (the kit's config/app.defaults names devkit/firmware/partitions/yaykit-v1.csv),
+# with app rollback. Up to 1.0.7 in the main repository this was sdkconfig.yaykit-v1 over a full-install layout.
 CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y
 CONFIG_FREERTOS_HZ=1000
 CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
@@ -19,28 +20,23 @@ CONFIG_COMPILER_OPTIMIZATION_PERF=y
 CONFIG_APP_REPRODUCIBLE_BUILD=y
 CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
 CONFIG_LV_COLOR_DEPTH_16=y
+# Bigger bands than the board's 40 lines: the screen in 5 bands instead of 12, each running the stage's drawing once
+# (87 KB of internal RAM; Party Play has no Wi-Fi or Bluetooth and keeps ~150 KB free).
+CONFIG_YK_BOARD_LCD_BUFFER_LINES=94
+# PSRAM reads (a scene's still part pasted from its buffer each frame, the menu icons, Yay): the larger data cache and
+# lines (32 KB of internal RAM more than the default 32 KB / 32 B).
+CONFIG_ESP32S3_DATA_CACHE_64KB=y
+CONFIG_ESP32S3_DATA_CACHE_LINE_64B=y
 CONFIG_LV_USE_SNAPSHOT=y
 CONFIG_LV_USE_CUSTOM_MALLOC=y
 CONFIG_LV_FONT_MONTSERRAT_20=y
 CONFIG_LV_USE_TINY_TTF=y
-CONFIG_LV_TINY_TTF_CACHE_GLYPH_CNT=128
+CONFIG_LV_TINY_TTF_CACHE_GLYPH_CNT=256
+CONFIG_LV_USE_CLIB_STRING=y
 CONFIG_FREERTOS_ISR_STACKSIZE=4096
 CONFIG_ESP_COREDUMP_ENABLE_TO_FLASH=y
 CONFIG_ESP_COREDUMP_DATA_FORMAT_ELF=y
-# Yaykit Link: NimBLE peripheral, one connection, host memory in PSRAM (off until asked for).
-CONFIG_BT_ENABLED=y
-CONFIG_BT_NIMBLE_ENABLED=y
-CONFIG_BT_NIMBLE_MEM_ALLOC_MODE_EXTERNAL=y
-CONFIG_BT_NIMBLE_ROLE_CENTRAL=n
-CONFIG_BT_NIMBLE_ROLE_OBSERVER=n
-CONFIG_BT_NIMBLE_MAX_CONNECTIONS=1
-CONFIG_BT_NIMBLE_NVS_PERSIST=n
-CONFIG_BT_NIMBLE_LOG_LEVEL_WARNING=y
-CONFIG_ESP_PROTOCOMM_SUPPORT_SECURITY_VERSION_0=n
-CONFIG_ESP_PROTOCOMM_SUPPORT_SECURITY_VERSION_1=n
-CONFIG_ESP_PROTOCOMM_SUPPORT_SECURITY_VERSION_2=y
-CONFIG_LV_USE_QRCODE=y
-# Boot time: the 8 MB PSRAM test costs ~420 ms on every start (each app switch is a restart).
-CONFIG_SPIRAM_MEMTEST=n
-# Development commands (yay tap|double|hold|say|launch); turn off for a release.
+# No Bluetooth: pairing and remote control belong to Yay now (docs/product/party-play.md, decided 2026-10-20).
+CONFIG_BT_ENABLED=n
+# Development commands (yay tap|double|hold|say|launch); ./kit build --release turns them off.
 CONFIG_YAY_DEV=y

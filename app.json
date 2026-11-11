@@ -1,10 +1,12 @@
 {
   "slug": "party-play",
   "kind": "extension",
-  "version": "0.1.0",
+  "version": "1.0.7",
   "name": {
-    "zh": "party-play",
-    "en": "party-play"
+    "zh": "聚会玩",
+    "en": "Party Play",
+    "ja": "パーティープレイ",
+    "es-419": "Juegos de fiesta"
   },
   "boards": [
     "tikpal-r1"
@@ -12,39 +14,203 @@
   "layout": "yaykit-v1",
   "minYay": "0.1.14",
   "apiLevel": 4,
-  "capabilities": {},
+  "capabilities": {
+    "records": {
+      "kinds": [
+        "party.session"
+      ]
+    }
+  },
   "launch": {
     "summary": {
-      "zh": "计数器样板：短按加一，按住清零。",
-      "en": "Counter template: tap to count, hold to reset."
+      "zh": "聚会小游戏：摇骰子、幸运转盘、抢拍、传炸弹、十秒挑战。设备平放在桌子中间，2–8 个人围着玩，离线。",
+      "en": "Party games: dice, a spinner, a reaction game, hot bomb and ten seconds. Lay the device in the middle of the table for 2–8 people, offline."
     },
     "examples": {
       "zh": [
-        "打开计数器",
-        "帮我数数"
+        "来玩转盘，我们 5 个人",
+        "掷三颗骰子",
+        "来玩传炸弹",
+        "我们几个比比反应",
+        "玩个聚会游戏",
+        "朋友来了玩点什么",
+        "人多玩什么好",
+        "大家都有点无聊"
       ],
       "en": [
-        "Open the counter",
-        "Count for me"
+        "Spin the wheel, there are 5 of us",
+        "Roll three dice",
+        "Let's play hot bomb",
+        "Let us race our reactions",
+        "Let's play a party game",
+        "Friends are over, what can we play?",
+        "Something fun for a group",
+        "We're all a bit bored"
       ]
+    },
+    "params": {
+      "game": {
+        "type": "string",
+        "description": "直接进哪个游戏：dice 摇骰子、wheel 转盘、react 抢拍、bomb 传炸弹、ten 十秒挑战；不给就进菜单",
+        "enum": [
+          "dice",
+          "wheel",
+          "react",
+          "bomb",
+          "ten"
+        ]
+      },
+      "players": {
+        "type": "number",
+        "description": "几个人，2–8"
+      },
+      "dice": {
+        "type": "number",
+        "description": "几颗骰子，1–3"
+      }
     }
   },
   "aliases": {
     "zh": [
-      "计数器"
+      "聚会游戏",
+      "派对游戏",
+      "小游戏"
     ],
     "en": [
-      "Counter"
+      "Party games",
+      "Party game"
     ]
   },
   "scenes": [
-    "tools"
+    "party"
   ],
   "audience": "all",
+  "records": {
+    "ask": {
+      "zh": "聚会玩玩得久的那晚，要我在「动态」里留一条吗？只记玩了哪些游戏、几局、几个人、多久，再加几个精彩瞬间（比如掷出豹子），不记名字。要的话回我一声。",
+      "en": "After a long night of Party Play, shall I leave a post in Feed? Only which games, how many rounds and players, how long, and a few highlights (like rolling a triple), never names. Just reply if you'd like that."
+    },
+    "kinds": [
+      {
+        "kind": "party.session",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "minutes": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 600
+            },
+            "players": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 8
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "games": {
+              "type": "object",
+              "properties": {
+                "dice": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999
+                },
+                "wheel": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999
+                },
+                "react": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999
+                },
+                "bomb": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999
+                },
+                "ten": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999
+                }
+              },
+              "additionalProperties": false
+            },
+            "highlights": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "triple",
+                      "perfect_ten",
+                      "fast_react"
+                    ]
+                  },
+                  "value": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1000
+                  }
+                },
+                "required": [
+                  "kind",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 3,
+              "default": []
+            }
+          },
+          "required": [
+            "minutes",
+            "games"
+          ],
+          "additionalProperties": false
+        },
+        "noMemory": true
+      }
+    ],
+    "feed": {
+      "cadence": "session",
+      "feedDays": 5
+    },
+    "pages": {
+      "template": "party-play@1"
+    }
+  },
   "pricing": {
     "kind": "free"
   },
   "voiceCode": {
-    "number": 65280
+    "number": 1
+  },
+  "permissions": {
+    "device": [
+      "speaker",
+      "motion"
+    ]
+  },
+  "privacy": {
+    "collects": [
+      {
+        "data": "usage",
+        "why": {
+          "zh": "你同意记录以后，玩够 3 局或 3 分钟的那一场，记下玩了哪些游戏、几局、几个人、玩了多久和几个精彩瞬间（比如掷出豹子），经 Tikpal 存进你的账号、在「动态」里整理；不记名字，不录音。",
+          "en": "Once you agree, a session of at least 3 rounds or 3 minutes keeps which games, how many rounds and players, how long, and a few highlights (like rolling a triple), stored in your account through Tikpal and shown in Feed. No names, no recording."
+        }
+      }
+    ]
   }
 }
