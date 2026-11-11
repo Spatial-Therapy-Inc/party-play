@@ -208,7 +208,7 @@
         "data": "usage",
         "why": {
           "zh": "你同意记录以后，玩够 3 局或 3 分钟的那一场，记下玩了哪些游戏、几局、几个人、玩了多久和几个精彩瞬间（比如掷出豹子），经 Tikpal 存进你的账号、在「动态」里整理；不记名字，不录音。",
-          "en": "Once you agree, a session of at least 3 rounds or 3 minutes keeps which games, how many rounds and players, how long, and a few highlights (like rolling a triple), stored in your account through Tikpal and shown in Feed. No names, no recording."
+          "en": "Once you agree, a session of 3+ rounds or 3+ minutes keeps which games, how many rounds and players, how long and a few highlights, in your account through Tikpal and in Feed. No names, no recording."
         }
       }
     ]
