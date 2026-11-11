@@ -40,6 +40,7 @@
 #include "yaykit_slots.h"
 #include "yaykit_speak.h"
 #include "yaykit_ui.h"
+#include "yk_mem.h"
 #include "yk_hint.h"
 
 #define APP_SLUG "party-play"
@@ -467,7 +468,9 @@ static void yk_info(void) {
     yk_slots_to_json(cJSON_AddArrayToObject(root, "slots"));
     cJSON *heap = cJSON_AddObjectToObject(root, "heap");
     cJSON_AddNumberToObject(heap, "internalFree", heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
-    cJSON_AddNumberToObject(heap, "internalMinEver", heap_caps_get_minimum_free_size(MALLOC_CAP_INTERNAL));
+    // the same figures as yaykit_link's yk info: the 40,000 bytes line is read on the lowest since yk_app_ready()
+    cJSON_AddNumberToObject(heap, "internalMinSinceReady", yk_mem_min_since_ready());
+    cJSON_AddNumberToObject(heap, "internalMinEver", yk_mem_min_ever());
     cJSON_AddNumberToObject(heap, "internalLargest", heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL));
     cJSON_AddNumberToObject(heap, "psramFree", heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
     cJSON_AddStringToObject(cJSON_AddObjectToObject(root, "ble"), "state", "off");
