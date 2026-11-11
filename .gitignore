@@ -1,0 +1,10 @@
+build/
+build-release/
+managed_components/
+sdkconfig
+sdkconfig.old
+.DS_Store
+shots/
+heap.json
+ai-selfreview.json
+*.tikpal
