@@ -41,6 +41,9 @@
 #include "yaykit_speak.h"
 #include "yaykit_ui.h"
 #include "yk_mem.h"
+#include "yk_more.h"
+#include "yk_vc_view.h"
+#include "yk_apps.h"
 #include "yk_hint.h"
 
 #define APP_SLUG "party-play"
@@ -212,6 +215,18 @@ static void brightness(int want) {
     }
 }
 
+// yaykit_app's own (its yk_app_ring.h, not on an app's include path): the system pull-down is up
+bool yk_app_sheet_is_open(void);
+
+/** One of the system's layers is up over the game: the app ring (a double press), 「回到 Yay 说？」 (a hold), 更多 from
+ *  the ring, the pull-down from the top edge or the 应用码 from it. They come on a key or a press yaykit_app takes, which
+ *  the game never sees, so it looks: they are lit at the system's brightness even when the game had gone dark or is
+ *  face down (device test of 1.0.7, 11-11: the ring was drawn on a dark screen after the idle screen-off). In the LVGL
+ *  task, holding the board lock. */
+static bool system_up(void) {
+    return yk_apps_is_open() || yk_apps_ask_is_open() || yk_more_is_open() || yk_app_sheet_is_open() || yk_vc_showing();
+}
+
 static void power(void) {
     battery();  // first: it may change the scene, whose light starts at 0
     // Yay's brightness and screen-off time as yaykit_app has them now: capped while the battery is low (no NVS read)
@@ -219,8 +234,13 @@ static void power(void) {
     s_play.idle_off = (float)yk_app_screen_off_s();
     const int dim = s_bright_on * 3 / 10 > 5 ? s_bright_on * 3 / 10 : 5;
     // a new scene and a turn come up from dark through the panel's brightness (pp_play_light): drawn once, unseen
-    const int level = s_play.face_down || s_play.off ? 0 : s_play.dimmed ? dim : s_bright_on;
-    brightness((int)lroundf(level * pp_play_light(&s_play)));
+    if (system_up()) {
+        pp_play_wake(&s_play);  // kept awake under it, so it does not go dark again the moment it goes
+        brightness(s_bright_on);
+    } else {
+        const int level = s_play.face_down || s_play.off ? 0 : s_play.dimmed ? dim : s_bright_on;
+        brightness((int)lroundf(level * pp_play_light(&s_play)));
+    }
     if (s_play.face_down != s_muted) {
         s_muted = s_play.face_down;
         pp_sound_mute(s_muted);
@@ -332,7 +352,7 @@ static bool go_pending(void) { return s_play.scene == PP_SC_REACT && s_play.reac
 static void on_refr_start(lv_event_t *e) {
     (void)e;
     // a scene changed between ticks (a touch) is due dark: dark before any of it reaches the glass
-    if (pp_play_light(&s_play) == 0 && s_bright != 0) brightness(0);
+    if (pp_play_light(&s_play) == 0 && s_bright != 0 && !system_up()) brightness(0);
     light_ev('F', s_play.scene);
     s_go_frame = go_pending();
     s_go_n = 0;
@@ -658,6 +678,8 @@ static int party_cmd(int argc, char **argv) {
         s_battery_at = s_play.now + 1e6f;  // keep the test value
     } else if (!strcmp(c, "face")) {
         pp_play_face_down(&s_play, !strcmp(a, "down") || !strcmp(a, "on"));
+    } else if (!strcmp(c, "sleep")) {  // as if left idle until the screen went off (a device standing up counts as held)
+        s_play.off = s_play.dimmed = true;
     } else if (!strcmp(c, "lift")) {  // as if picked up and shaken (dice) without the sensor
         pp_motion_in_t mi = {.events = 1 | 4, .held = false, .moving = true, .holder = 1.5707963f, .holder_conf = 1};
         pp_play_tick(&s_play, 0.001f, &mi);
@@ -675,7 +697,7 @@ static int party_cmd(int argc, char **argv) {
     }
     board_unlock();
     if (rc) printf("usage: party status|go <scene>|tap <x> <y>|swipe l|r|u|d|rim <deg> [w]|key|players <n>|dice <n>|"
-                   "lang zh|en|quick on|off|battery <0-2> [pct]|face down|up|lift|react false <seat> <ms>|"
+                   "lang zh|en|quick on|off|battery <0-2> [pct]|face down|up|sleep|lift|react false <seat> <ms>|"
                    "react bypart on|off|result\n");
     return rc;
 }

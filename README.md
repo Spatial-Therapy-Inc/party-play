@@ -59,7 +59,7 @@
 
 - `party status`、`party go menu|seats|dice|wheel|react|bomb|ten|settings|scores|charge`
 - `party tap <x> <y>`、`party swipe l|r|u|d`、`party rim <度> [角速度]`、`party key`、`party lift`（不用传感器也能掷）
-- `party players <n>`、`party dice <n>`、`party lang zh|en`、`party quick on|off`（炸弹 1–13 秒）、`party battery <0-2> [pct]`、`party face down|up`、`party result`
+- `party players <n>`、`party dice <n>`、`party lang zh|en`、`party quick on|off`（炸弹 1–13 秒）、`party battery <0-2> [pct]`、`party face down|up`、`party sleep`（当作闲置到熄屏）、`party result`
 - `party react false <座位> <毫秒>`、`party react bypart on|off`
 - `sfx <编号> [力度]`、`perf [reset]`、`perf light`、`snap`、`heap`、`app status|exit|recovery`；组件的 `motion …`、`speak …`
 - `yk info`、`yk cmd <名字> [json]`：和 yaykit_link 一样的格式，只走 USB，`./kit info` 能用；`device.id` 照 yaykit_link 的算法从 MAC 算出来（和主固件显示的一样）
@@ -81,4 +81,5 @@
   - 从顶边往下拉是系统下拉（Wi-Fi、电量、手机，「在手机上打开」亮 1 号应用码）；
   - 应用环只放应用；
   - 音效的音量档跟主固件 0.1.14 的表走。
+- 应用环（双击侧键）、「回到 Yay 说？」、更多、系统下拉和应用码是系统的层，开它们的按键和手势游戏收不到：开着的时候屏幕照系统亮度亮着，游戏闲置熄屏或者扣着也一样，游戏也跟着醒（第一次交审时真机测试退回：闲置熄屏后双击侧键，应用环画出来了但屏幕不亮）。
 - 设置换到自己的命名空间 `yk_partyplay`：从 1.0.6 升上来，人数、骰子数、小惩罚开关、语言、十秒的模式会回到默认一次。

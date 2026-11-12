@@ -759,6 +759,22 @@ static void test_play(void) {
     CHECK(!pp_play_touch_down(&p, 233, 233));
     CHECK(!p.off && pp_play_touch_down(&p, 233, 233));
 
+    // a system layer over the game (the app ring on a double press, which the game never sees, 11-11): from off it
+    // wakes like a touch, without one; the idle count starts over; face down stays face down
+    run(&p, 61, NULL);
+    run(&p, 2.5f, NULL);
+    CHECK(p.off);
+    pp_play_wake(&p);
+    CHECK(!p.off && !p.dimmed && p.idle == 0);
+    run(&p, 61, NULL);
+    CHECK(p.dimmed && !p.off);
+    pp_play_wake(&p);
+    CHECK(!p.dimmed && p.idle == 0);
+    pp_play_face_down(&p, true);
+    pp_play_wake(&p);
+    CHECK(p.face_down);
+    pp_play_face_down(&p, false);
+
     // launch from Yay: straight into the wheel with 5 even seats
     pp_play_init(&p, 5);
     const pp_launch_params_t lp = {.game = PP_GAME_WHEEL, .players = 5};

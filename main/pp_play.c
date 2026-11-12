@@ -843,6 +843,14 @@ static void wake(pp_play_t *p) {
     p->fade = -1;
 }
 
+void pp_play_wake(pp_play_t *p) {
+    p->idle = p->quiet = 0;
+    p->resting = false;
+    if (p->face_down) return;
+    if (p->off) wake(p);
+    p->dimmed = false;
+}
+
 bool pp_play_touch_down(pp_play_t *p, float x, float y) {
     (void)x, (void)y;
     p->idle = p->quiet = 0;

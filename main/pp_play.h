@@ -268,6 +268,10 @@ void pp_play_go_bands(pp_play_t *p, const int *y1, const float *on_glass, int n)
 void pp_play_two_at_once(pp_play_t *p);
 
 void pp_play_key_short(pp_play_t *p);
+/** One of the system's layers is up over the game (the app ring, 「回到 Yay 说？」, the pull-down): input in all but
+ *  name, from a key or a press the game never sees. The idle count starts over and a screen that was off or dimmed
+ *  comes back (its first frame drawn dark, as after a touch); face down stays face down. */
+void pp_play_wake(pp_play_t *p);
 void pp_play_face_down(pp_play_t *p, bool down);
 void pp_play_battery(pp_play_t *p, int level, int pct);
 /** Console / tests: go to a scene directly. */
