@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 # Party Play (README). Test builds may pass -DPROJECT_VER to tell slot images apart.
 if(NOT DEFINED PROJECT_VER)
-    set(PROJECT_VER "1.0.7")
+    set(PROJECT_VER "1.0.8")
 endif()
 # The shared firmware directory: this app's own repository has the development kit as its devkit/ submodule (pinned
 # at a version); the main repository's firmware/party-play (where Party Play lived up to 1.0.7) has it one level up.

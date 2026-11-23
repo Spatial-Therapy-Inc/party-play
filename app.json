@@ -1,7 +1,7 @@
 {
   "slug": "party-play",
   "kind": "extension",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "name": {
     "zh": "聚会玩",
     "en": "Party Play",
@@ -12,8 +12,8 @@
     "tikpal-r1"
   ],
   "layout": "yaykit-v1",
-  "minYay": "0.1.14",
-  "apiLevel": 4,
+  "minYay": "0.1.22",
+  "apiLevel": 6,
   "capabilities": {
     "records": {
       "kinds": [
